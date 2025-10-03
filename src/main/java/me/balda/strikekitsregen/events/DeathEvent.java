@@ -2,56 +2,91 @@ package me.balda.strikekitsregen.events;
 
 import ga.strikepractice.StrikePractice;
 import ga.strikepractice.api.StrikePracticeAPI;
+import ga.strikepractice.arena.Arena;
 import ga.strikepractice.battlekit.BattleKit;
+import ga.strikepractice.fight.Fight;
 import me.balda.strikekitsregen.StrikeKitsRegen;
+import me.balda.strikekitsregen.config.ConfigManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 public class DeathEvent implements Listener {
-    StrikeKitsRegen plugin;
+    private final StrikeKitsRegen plugin;
+    private final StrikePracticeAPI api;
+    private final ConfigManager configManager;
+    
     public DeathEvent(StrikeKitsRegen plugin) {
         this.plugin = plugin;
+        this.api = StrikePractice.getAPI();
+        this.configManager = plugin.getConfigManager();
     }
-    StrikePracticeAPI api = StrikePractice.getAPI();
 
-    @EventHandler
-    public void onDeath(PlayerDeathEvent e) {
-        Player victim = e.getEntity();
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onDeath(PlayerDeathEvent event) {
+        Player victim = event.getEntity();
         Player killer = victim.getKiller();
+        
         if (killer != null && api.getFight(killer) != null) {
-            givekit(killer);
-        }else if(plugin.incombat.containsKey(victim)){
-            Player damager = plugin.incombat.get(victim);
-            if(api.getFight(damager) != null){
-                givekit(damager);
+            giveKit(killer);
+        } else if (plugin.getInCombat().containsKey(victim)) {
+            Player damager = plugin.getInCombat().get(victim);
+            if (api.getFight(damager) != null) {
+                giveKit(damager);
             }
         }
-        plugin.incombat.remove(victim);
+        plugin.getInCombat().remove(victim);
     }
 
-    public void givekit(Player aggressor){
-        if(api.getFight(aggressor).getArena().isFFA()){
-            BattleKit kit = api.getFight(aggressor).getKit();
+    private void giveKit(Player aggressor) {
+        Fight fight = api.getFight(aggressor);
+        if (fight == null) return;
+        
+        Arena arena = fight.getArena();
+        if (!arena.isFFA()) return;
+        
+        String arenaName = arena.getName();
+        BattleKit kit = fight.getKit();
+        
+        if (kit != null) {
+            // Check and apply feed
+            if (configManager.isFeedOnFFAKill() && 
+                !configManager.isArenaExcluded(arenaName, configManager.getFeedExclude())) {
+                aggressor.setFoodLevel(20);
+                aggressor.setSaturation(20.0f);
+            }
+            
+            // Check and apply heal
+            if (configManager.isHealOnFFAKill() && 
+                !configManager.isArenaExcluded(arenaName, configManager.getHealExclude())) {
+                aggressor.setHealth(aggressor.getMaxHealth());
+            }
+            
+            // Check and apply kit restoration
+            if (configManager.isRestoreKitOnFFAKill() && 
+                !configManager.isArenaExcluded(arenaName, configManager.getRestoreExclude())) {
+                restoreKit(aggressor, kit);
+            }
+        }
+    }
+    
+    private void restoreKit(Player player, BattleKit currentKit) {
+        try {
+            BattleKit lastKit = api.getLastSelectedEditedKit(player);
             if (kit != null) {
-                if(plugin.getConfig().getBoolean("feed_on_ffa_kill")){
-                    aggressor.setFoodLevel(20);
-                }
-                if(plugin.getConfig().getBoolean("heal_on_ffa_kill")){
-                    aggressor.setHealth(20);
-                }
-                if(plugin.getConfig().getBoolean("restore_kit_on_ffa_kill")){
-                    BattleKit lastkit = api.getLastSelectedEditedKit(aggressor);
-                    if (lastkit != null) {
-                        kit.giveKitStuff(aggressor, lastkit);
-                    } else {
-                        String kitname = kit.getName();
-                        BattleKit kitdefault = api.getKit(kitname);
-                        kit.giveKitStuff(aggressor, kitdefault);
-                    }
+            if (lastKit != null) {
+                currentKit.giveKitStuff(player, lastKit);
+            } else {
+                String kitName = currentKit.getName();
+                BattleKit defaultKit = api.getKit(kitName);
+                if (defaultKit != null) {
+                    currentKit.giveKitStuff(player, defaultKit);
                 }
             }
+        } catch (Exception e) {
+            plugin.getLogger().warning("Failed to restore kit for player " + player.getName() + ": " + e.getMessage());
         }
     }
 }

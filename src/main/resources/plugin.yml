@@ -2,5 +2,8 @@ name: StrikeKitsRegen
 version: '${version}'
 main: me.balda.strikekitsregen.StrikeKitsRegen
 api-version: '1.21'
+folia-supported: true
 depend: [StrikePractice]
 authors: [Balda_]
+description: Fast and simple addon for StrikePractice plugin that regenerates kits on kills
+website: https://github.com/yourusername/StrikeKitsRegen
