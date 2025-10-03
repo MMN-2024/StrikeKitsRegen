@@ -1,6 +1,6 @@
 name: StrikeKitsRegen
-version: '${project.version}'
+version: '${version}'
 main: me.balda.strikekitsregen.StrikeKitsRegen
-api-version: '1.19'
+api-version: '1.21'
 depend: [StrikePractice]
 authors: [Balda_]
