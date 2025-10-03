@@ -1,9 +1,21 @@
 name: StrikeKitsRegen
 version: '${version}'
-main: me.balda.strikekitsregen.StrikeKitsRegen
+main: net.minemalia.strikekitsregen.StrikeKitsRegen
 api-version: '1.21'
 folia-supported: true
 depend: [StrikePractice]
-authors: [Balda_]
-description: Fast and simple addon for StrikePractice plugin that regenerates kits on kills
-website: https://github.com/yourusername/StrikeKitsRegen
+authors: [mDevelopment]
+description: Regenerates player health, hunger, and kits after kills in StrikePractice FFA arenas
+website: https://github.com/minemalia/StrikeKitsRegen
+
+commands:
+  strikekitsregen:
+    description: Main plugin command
+    aliases: [skr]
+    permission: strikekitsregen.admin
+    usage: /<command> [reload]
+
+permissions:
+  strikekitsregen.admin:
+    description: Access to plugin administration commands
+    default: op

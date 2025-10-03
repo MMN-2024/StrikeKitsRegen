@@ -1,26 +1,67 @@
-#If the player kills another player in a FFA arena, feed him.
-feed_on_ffa_kill: true
-feed_exclude:
-  - ffa
-  - npot
-# Exclude kit restoration when killer has these kits
-restore_exclude_kits:
-  - BuildUHC
-# Exclude feeding when killer has these kits
-feed_exclude_kits:
-  - NoDebuff
-  - Gapple
+# StrikeKitsRegen Configuration
+# Plugin by mDevelopment for Minemalia Network
+# 
+# This plugin automatically regenerates player stats after kills in StrikePractice FFA arenas
+# You can configure what gets regenerated and create exceptions for specific arenas or kits
 
-#If the player kills another player in a FFA arena, heal him.
-heal_on_ffa_kill: true
-heal_exclude:
-  - dpot
-# Exclude healing when killer has these kits  
-heal_exclude_kits:
-  - Soup
+# =============================================================================
+# HEALTH REGENERATION
+# =============================================================================
+health:
+  # Should players be healed to full health after killing someone in FFA?
+  enabled: true
+  
+  # Arenas where health regeneration is DISABLED
+  # Use the exact arena names from StrikePractice
+  excluded_arenas:
+    - "Soup FFA"
+    - "UHC FFA"
+  
+  # Kits where health regeneration is DISABLED
+  # Use the exact kit names from StrikePractice
+  excluded_kits:
+    - "Soup"
+    - "UHC"
 
-#If the player kills another player in a FFA arena, restore his kit.
-#This feature restore the last kit the player selected. Even if the player selected a custom layout of the kit, it will be restored.
-#If the player has no custom layouts, it will restore the default kit of that arena.
-restore_kit_on_ffa_kill: true
-restore_exclude:
+# =============================================================================
+# HUNGER REGENERATION  
+# =============================================================================
+hunger:
+  # Should players have their hunger restored after killing someone in FFA?
+  enabled: true
+  
+  # Arenas where hunger regeneration is DISABLED
+  excluded_arenas:
+    - "NoHunger FFA"
+  
+  # Kits where hunger regeneration is DISABLED
+  excluded_kits:
+    - "Creative"
+
+# =============================================================================
+# KIT RESTORATION
+# =============================================================================
+kit:
+  # Should players have their kit items restored after killing someone in FFA?
+  # This restores the player's custom kit layout, or the default kit if no custom layout exists
+  enabled: true
+  
+  # Arenas where kit restoration is DISABLED
+  excluded_arenas:
+    - "BuildUHC FFA"
+  
+  # Kits where kit restoration is DISABLED
+  excluded_kits:
+    - "BuildUHC"
+    - "Archer"
+
+# =============================================================================
+# GENERAL SETTINGS
+# =============================================================================
+general:
+  # Enable debug messages in console (useful for troubleshooting)
+  debug: false
+  
+  # Delay in ticks before applying regeneration effects (20 ticks = 1 second)
+  # Set to 0 for instant regeneration
+  delay_ticks: 0
