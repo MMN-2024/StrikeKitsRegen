@@ -43,7 +43,23 @@ public class ConfigManager {
         return config.getStringList("restore_exclude");
     }
     
+    public List<String> getFeedExcludeKits() {
+        return config.getStringList("feed_exclude_kits");
+    }
+    
+    public List<String> getHealExcludeKits() {
+        return config.getStringList("heal_exclude_kits");
+    }
+    
+    public List<String> getRestoreExcludeKits() {
+        return config.getStringList("restore_exclude_kits");
+    }
+    
     public boolean isArenaExcluded(String arenaName, List<String> excludeList) {
         return excludeList.contains(arenaName.toLowerCase());
+    }
+    
+    public boolean isKitExcluded(String kitName, List<String> excludeList) {
+        return excludeList.contains(kitName.toLowerCase());
     }
 }

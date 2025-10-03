@@ -49,24 +49,28 @@ public class DeathEvent implements Listener {
         
         String arenaName = arena.getName();
         BattleKit kit = fight.getKit();
+        String kitName = kit != null ? kit.getName() : "";
         
         if (kit != null) {
             // Check and apply feed
             if (configManager.isFeedOnFFAKill() && 
-                !configManager.isArenaExcluded(arenaName, configManager.getFeedExclude())) {
+                !configManager.isArenaExcluded(arenaName, configManager.getFeedExclude()) &&
+                !configManager.isKitExcluded(kitName, configManager.getFeedExcludeKits())) {
                 aggressor.setFoodLevel(20);
                 aggressor.setSaturation(20.0f);
             }
             
             // Check and apply heal
             if (configManager.isHealOnFFAKill() && 
-                !configManager.isArenaExcluded(arenaName, configManager.getHealExclude())) {
+                !configManager.isArenaExcluded(arenaName, configManager.getHealExclude()) &&
+                !configManager.isKitExcluded(kitName, configManager.getHealExcludeKits())) {
                 aggressor.setHealth(aggressor.getMaxHealth());
             }
             
             // Check and apply kit restoration
             if (configManager.isRestoreKitOnFFAKill() && 
-                !configManager.isArenaExcluded(arenaName, configManager.getRestoreExclude())) {
+                !configManager.isArenaExcluded(arenaName, configManager.getRestoreExclude()) &&
+                !configManager.isKitExcluded(kitName, configManager.getRestoreExcludeKits())) {
                 restoreKit(aggressor, kit);
             }
         }
@@ -75,12 +79,11 @@ public class DeathEvent implements Listener {
     private void restoreKit(Player player, BattleKit currentKit) {
         try {
             BattleKit lastKit = api.getLastSelectedEditedKit(player);
-            if (kit != null) {
             if (lastKit != null) {
                 currentKit.giveKitStuff(player, lastKit);
             } else {
-                String kitName = currentKit.getName();
-                BattleKit defaultKit = api.getKit(kitName);
+                String currentKitName = currentKit.getName();
+                BattleKit defaultKit = api.getKit(currentKitName);
                 if (defaultKit != null) {
                     currentKit.giveKitStuff(player, defaultKit);
                 }

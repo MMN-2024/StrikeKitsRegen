@@ -25,7 +25,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
-    compileOnly(name = "strikepractice-api", version = "", ext = "jar")
+    compileOnly(files("libs/strikepractice-api.jar"))
 }
 
 tasks {
