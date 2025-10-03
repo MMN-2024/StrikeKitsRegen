@@ -22,6 +22,14 @@ public final class StrikeKitsRegen extends JavaPlugin {
         instance = this;
         logger = getLogger();
         
+        // Check if StrikePractice is available
+        if (getServer().getPluginManager().getPlugin("StrikePractice") == null) {
+            logger.severe("StrikePractice plugin not found! This plugin requires StrikePractice to function.");
+            logger.severe("Please install StrikePractice before using this plugin.");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        
         // Initialize configuration
         configManager = new ConfigManager(this);
         getConfig().options().copyDefaults(true);

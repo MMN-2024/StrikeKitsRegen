@@ -25,7 +25,10 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
-    compileOnly(files("libs/strikepractice-api.jar"))
+    // StrikePractice API - will be loaded at runtime if available
+    if (file("libs/strikepractice-api.jar").exists()) {
+        compileOnly(files("libs/strikepractice-api.jar"))
+    }
 }
 
 tasks {
